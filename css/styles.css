@@ -41,7 +41,7 @@ body {
   font-size: 17px;
   line-height: 1.75;
   color: var(--text);
-  background: var(--cream);
+  background: var(--navy);
   overflow-x: hidden;
 }
 
@@ -114,6 +114,7 @@ p { margin-bottom: 1.2rem; }
 .section {
   padding: 100px 0;
   position: relative;
+  background: var(--cream);
 }
 
 /* ── Buttons ────────────────────────────── */
@@ -309,8 +310,9 @@ p { margin-bottom: 1.2rem; }
   background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, var(--blue-deep) 100%);
   position: relative;
   overflow: hidden;
-  padding-top: 80px;
+  padding-top: 100px;
 }
+
 
 .hero::before {
   content: '';
