@@ -214,17 +214,19 @@ p { margin-bottom: 1.2rem; }
   height: 44px;
   width: auto;
   transition: all 0.4s var(--ease-out);
-  position: absolute;
 }
 
-.nav__logo .logo-white { opacity: 1; }
-.nav__logo .logo-color { opacity: 0; }
+/* White logo sits in flow, color overlaps it */
+.nav__logo .logo-color {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
 
 .nav.scrolled .nav__logo img { height: 36px; }
 .nav.scrolled .nav__logo .logo-white { opacity: 0; }
 .nav.scrolled .nav__logo .logo-color { opacity: 1; }
-
-/* On inner pages with page-header, nav starts transparent too */
 
 .nav__links {
   display: flex;
