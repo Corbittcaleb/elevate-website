@@ -2,28 +2,56 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // ── Mobile Nav ──────────────────────────
   var toggle = document.querySelector('.nav__toggle');
   var links = document.querySelector('.nav__links');
+  var nav = document.querySelector('.nav');
+
+  function closeNav() {
+    if (toggle && links) {
+      toggle.classList.remove('open');
+      links.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
 
   if (toggle && links) {
-    toggle.addEventListener('click', function () {
-      toggle.classList.toggle('open');
-      links.classList.toggle('open');
-      document.body.style.overflow = links.classList.contains('open') ? 'hidden' : '';
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isOpen = links.classList.contains('open');
+      if (isOpen) {
+        closeNav();
+      } else {
+        toggle.classList.add('open');
+        links.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
     });
 
+    // Close on link click
     links.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', function () {
-        toggle.classList.remove('open');
-        links.classList.remove('open');
-        document.body.style.overflow = '';
-      });
+      link.addEventListener('click', closeNav);
+    });
+
+    // Close on tap outside nav links
+    document.addEventListener('click', function (e) {
+      if (links.classList.contains('open') && !links.contains(e.target) && !toggle.contains(e.target)) {
+        closeNav();
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && links.classList.contains('open')) {
+        closeNav();
+        toggle.focus();
+      }
     });
   }
 
   // ── Nav Scroll Behavior ─────────────────
-  var nav = document.querySelector('.nav');
   if (nav) {
     window.addEventListener('scroll', function () {
       nav.classList.toggle('scrolled', window.scrollY > 60);
@@ -31,22 +59,29 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ── Scroll Reveal ───────────────────────
-  var reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+  if (!prefersReducedMotion) {
+    var reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
 
-  if (reveals.length > 0) {
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          observer.unobserve(entry.target);
-        }
+    if (reveals.length > 0) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -30px 0px'
       });
-    }, {
-      threshold: 0.15,
-      rootMargin: '0px 0px -40px 0px'
-    });
 
-    reveals.forEach(function (el) { observer.observe(el); });
+      reveals.forEach(function (el) { observer.observe(el); });
+    }
+  } else {
+    // If reduced motion, make everything visible immediately
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(function (el) {
+      el.classList.add('revealed');
+    });
   }
 
   // ── Stagger Children ───────────────────
@@ -76,6 +111,12 @@ document.addEventListener('DOMContentLoaded', function () {
     var target = parseInt(el.getAttribute('data-count'), 10);
     var suffix = el.getAttribute('data-suffix') || '';
     var prefix = el.getAttribute('data-prefix') || '';
+
+    if (prefersReducedMotion) {
+      el.textContent = prefix + target + suffix;
+      return;
+    }
+
     var duration = 1600;
     var start = performance.now();
 
@@ -97,11 +138,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ── Parallax on Hero ───────────────────
   var heroImage = document.querySelector('.hero__image');
-  if (heroImage && window.innerWidth > 768) {
+  if (heroImage && window.innerWidth > 768 && !prefersReducedMotion) {
     window.addEventListener('scroll', function () {
       var scrolled = window.scrollY;
       if (scrolled < 800) {
-        heroImage.style.transform = 'translateY(' + (scrolled * 0.12) + 'px)';
+        var opacity = 1 - (scrolled / 800) * 0.3;
+        heroImage.style.transform = 'translateY(' + (scrolled * 0.1) + 'px)';
+        heroImage.style.opacity = opacity;
       }
     }, { passive: true });
   }
