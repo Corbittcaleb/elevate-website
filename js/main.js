@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (toggle && links) {
       toggle.classList.remove('open');
       links.classList.remove('open');
+      if (nav) nav.classList.remove('open');
       document.body.style.overflow = '';
     }
   }
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
       } else {
         toggle.classList.add('open');
         links.classList.add('open');
+        if (nav) nav.classList.add('open');
         document.body.style.overflow = 'hidden';
       }
     });
